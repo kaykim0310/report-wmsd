@@ -202,21 +202,6 @@ with tabs[1]:
     
     st.markdown("---")
     
-    # 부담작업 정의
-    부담작업_정의 = {
-        "1호": "하루에 4시간 이상 집중적으로 자료입력 등을 위해 키보드 또는 마우스를 조작하는 작업",
-        "2호": "하루에 총 2시간 이상 목, 어깨, 팔꿈치, 손목 또는 손을 사용하여 같은 동작을 반복하는 작업",
-        "3호": "하루에 총 2시간 이상 머리 위에 손이 있거나, 팔꿈치가 어깨 위에 있거나, 팔꿈치를 몸통으로부터 들거나, 팔꿈치를 몸통 뒤쪽에 위치하도록 하는 상태에서 이루어지는 작업",
-        "4호": "지지되지 않은 상태이거나 임의로 자세를 바꿀 수 없는 조건에서, 하루에 2시간 이상 목이나 허리를 구부리거나 트는 상태에서 이루어지는 작업",
-        "5호": "하루에 총 2시간 이상 쪼그리고 앉거나 무릎을 굽힌 자세에서 이루어지는 작업",
-        "6호": "하루에 총 2시간 이상 지지되지 않은 상태에서 1kg 이상의 물건을 한 손의 손가락으로 집어 옮기거나, 2kg 이상에 상응하는 힘을 가하여 한 손의 손가락으로 물건을 쥐는 작업",
-        "7호": "하루에 총 2시간 이상 지지되지 않은 상태에서 4.5kg 이상의 물건을 한 손으로 들거나 동일한 힘으로 쥐는 작업",
-        "8호": "하루에 10회 이상 25kg 이상의 물체를 드는 작업",
-        "9호": "하루에 25회 이상 10kg 이상의 물체를 무릎 아래에서 들거나, 어깨 위에서 들거나, 팔을 뻗은 상태에서 드는 작업",
-        "10호": "하루에 총 2시간 이상, 분당 2회 이상 4.5kg 이상의 물체를 드는 작업",
-        "11호": "하루에 총 2시간 이상 시간당 10회 이상 손 또는 무릎을 사용하여 반복적으로 충격을 가하는 작업"
-    }
-    
     # 기존 데이터 편집기
     columns = [
         "작업명", "단위작업명"
@@ -238,10 +223,7 @@ with tabs[1]:
     ]
     column_config = {
         f"{i}호": st.column_config.SelectboxColumn(
-            f"{i}호", 
-            options=ho_options, 
-            required=True,
-            help=부담작업_정의[f"{i}호"]
+            f"{i}호", options=ho_options, required=True
         ) for i in range(1, 12)
     }
     column_config["작업명"] = st.column_config.TextColumn("작업명")
@@ -523,49 +505,141 @@ with tabs[3]:
                             "부담작업호": row["부담작업(호)"]
                         })
             
-            # 7개 행의 데이터 준비
-            원인분석_data = []
+            # 유해요인 옵션
+            유해요인_옵션 = ["", "반복동작", "부자연스러운 자세", "과도한 힘", "접촉스트레스 또는 기타"]
+            
+            # 부담작업 옵션들
+            반복동작_부담작업 = [
+                "",
+                "집중적으로 자료입력 등을 위해 키보드 또는 마우스를 조작하는 작업",
+                "목, 어깨, 팔꿈치, 손목 또는 손을 사용하여 같은 동작을 반복하는 작업",
+                "지지되지 않은 상태에서 1kg 이상의 물건을 한손의 손가락으로 집어 옮기거나, 2kg 이상에 상응하는 힘을 가하여 한손의 손가락으로 물건을 쥐는 작업",
+                "지지되지 않은 상태에서 4.5kg 이상의 물건을 한 손으로 들거나 동일한 힘으로 쥐는 작업",
+                "4.5kg 이상의 물체를 드는 작업"
+            ]
+            
+            부자연스러운자세_부담작업 = [
+                "",
+                "하루에 총 2시간 이상 머리 위에 손이 있거나, 팔꿈치가 어깨위에 있거나, 팔꿈치를 몸통으로부터 들거나, 팔꿈치를 몸통뒤쪽에 위치하도록 하는 상태에서 이루어지는 작업",
+                "지지되지 않은 상태이거나 임의로 자세를 바꿀 수 없는 조건에서, 하루에 총 2시간 이상 목이나 허리를 구부리거나 트는 상태에서 이루어지는 작업",
+                "하루에 총 2시간 이상 쪼그리고 앉거나 무릎을 굽힌 자세에서 이루어지는 작업"
+            ]
+            
+            과도한힘_부담작업 = [
+                "",
+                "25kg 이상의 물체를 드는 작업",
+                "10kg 이상의 물체를 무릎 아래에서 들거나, 어깨 위에서 들거나, 팔을 뻗은 상태에서 드는 작업"
+            ]
+            
+            접촉스트레스기타_부담작업 = [
+                "",
+                "접촉스트레스",
+                "진동",
+                "밀기-당기기"
+            ]
+            
+            # 7개 행의 데이터 처리
             for i in range(7):
-                if i < len(부담작업_정보):
-                    부담작업_텍스트 = f"부담작업({부담작업_정보[i]['부담작업호']})"
-                    단위작업명_기본값 = 부담작업_정보[i]['단위작업명']
-                else:
-                    부담작업_텍스트 = "부담작업(해당사항없음)"
-                    단위작업명_기본값 = ""
+                st.markdown(f"#### {i+1}번")
+                
+                col1, col2, col3 = st.columns([2, 2, 2])
+                
+                with col1:
+                    # 단위작업명
+                    if i < len(부담작업_정보):
+                        단위작업명_기본값 = 부담작업_정보[i]['단위작업명']
+                        부담작업_텍스트 = f"부담작업({부담작업_정보[i]['부담작업호']})"
+                    else:
+                        단위작업명_기본값 = ""
+                        부담작업_텍스트 = "부담작업(해당사항없음)"
                     
-                원인분석_data.append({
-                    "번호": str(i+1),
-                    "단위작업명": 단위작업명_기본값,
-                    "유해요인": "",
-                    "부담작업": 부담작업_텍스트,
-                    "발생원인": "",
-                    "비고": ""
-                })
-            
-            원인분석_df = pd.DataFrame(원인분석_data)
-            
-            # 컬럼 설정
-            원인분석_column_config = {
-                "번호": st.column_config.TextColumn("", disabled=True, width=50),
-                "단위작업명": st.column_config.TextColumn("단위작업명", width=200),
-                "유해요인": st.column_config.TextColumn("유해요인", width=200),
-                "부담작업": st.column_config.TextColumn("", disabled=True, width=180),
-                "발생원인": st.column_config.TextColumn("발생원인", width=300),
-                "비고": st.column_config.TextColumn("비고", width=150)
-            }
-            
-            # 데이터 편집기
-            원인분석_edited_df = st.data_editor(
-                원인분석_df,
-                use_container_width=True,
-                hide_index=True,
-                column_config=원인분석_column_config,
-                key=f"원인분석_data_editor_{selected_작업명}",
-                disabled=["번호", "부담작업"]
-            )
-            
-            # 원인분석 데이터도 세션 상태에 저장
-            st.session_state[f"원인분석_data_{selected_작업명}"] = 원인분석_edited_df
+                    단위작업명 = st.text_input("단위작업명", value=단위작업명_기본값, key=f"원인분석_단위작업명_{i}_{selected_작업명}")
+                    st.text(부담작업_텍스트)
+                
+                with col2:
+                    # 유해요인 선택
+                    유해요인 = st.selectbox("유해요인", 유해요인_옵션, key=f"원인분석_유해요인_{i}_{selected_작업명}")
+                
+                with col3:
+                    # 비고
+                    비고 = st.text_input("비고", key=f"원인분석_비고_{i}_{selected_작업명}")
+                
+                # 유해요인에 따른 세부 입력
+                if 유해요인 == "반복동작":
+                    col1, col2 = st.columns(2)
+                    with col1:
+                        부담작업_선택 = st.selectbox("부담작업 선택", 반복동작_부담작업, key=f"반복동작_부담작업_{i}_{selected_작업명}")
+                    
+                    if 부담작업_선택:
+                        col1, col2, col3, col4 = st.columns(4)
+                        with col1:
+                            수공구_종류 = st.text_input("수공구 종류", key=f"수공구_종류_{i}_{selected_작업명}")
+                            부담부위 = st.text_input("부담부위", key=f"부담부위_{i}_{selected_작업명}")
+                        with col2:
+                            수공구_용도 = st.text_input("수공구 용도", key=f"수공구_용도_{i}_{selected_작업명}")
+                            회당_반복시간 = st.text_input("회당 반복시간(초/분)", key=f"반복_회당반복시간_{i}_{selected_작업명}")
+                        with col3:
+                            수공구_무게 = st.text_input("수공구 무게(kg)", key=f"수공구_무게_{i}_{selected_작업명}")
+                            작업시간동안_반복횟수 = st.text_input("작업시간동안 반복횟수", key=f"반복_반복횟수_{i}_{selected_작업명}")
+                        with col4:
+                            수공구_사용시간 = st.text_input("수공구 사용시간", key=f"수공구_사용시간_{i}_{selected_작업명}")
+                            총작업시간 = st.text_input("총작업시간", key=f"반복_총작업시간_{i}_{selected_작업명}")
+                
+                elif 유해요인 == "부자연스러운 자세":
+                    col1, col2 = st.columns(2)
+                    with col1:
+                        부담작업자세 = st.selectbox("부담작업자세", 부자연스러운자세_부담작업, key=f"부자연스러운자세_부담작업_{i}_{selected_작업명}")
+                    
+                    if 부담작업자세:
+                        col1, col2, col3 = st.columns(3)
+                        with col1:
+                            회당_반복시간 = st.text_input("회당 반복시간(초/분)", key=f"자세_회당반복시간_{i}_{selected_작업명}")
+                        with col2:
+                            작업시간동안_반복횟수 = st.text_input("작업시간동안 반복횟수", key=f"자세_반복횟수_{i}_{selected_작업명}")
+                        with col3:
+                            총작업시간 = st.text_input("총작업시간", key=f"자세_총작업시간_{i}_{selected_작업명}")
+                
+                elif 유해요인 == "과도한 힘":
+                    col1, col2 = st.columns(2)
+                    with col1:
+                        부담작업_선택 = st.selectbox("부담작업", 과도한힘_부담작업, key=f"과도한힘_부담작업_{i}_{selected_작업명}")
+                    
+                    if 부담작업_선택:
+                        col1, col2 = st.columns(2)
+                        with col1:
+                            중량물_무게 = st.text_input("중량물 무게(kg)", key=f"중량물_무게_{i}_{selected_작업명}")
+                        with col2:
+                            작업시간동안_작업횟수 = st.text_input("작업시간동안 작업횟수", key=f"힘_작업횟수_{i}_{selected_작업명}")
+                
+                elif 유해요인 == "접촉스트레스 또는 기타":
+                    col1, col2 = st.columns(2)
+                    with col1:
+                        부담작업_선택 = st.selectbox("부담작업", 접촉스트레스기타_부담작업, key=f"기타_부담작업_{i}_{selected_작업명}")
+                    
+                    if 부담작업_선택 == "접촉스트레스":
+                        col1, col2 = st.columns(2)
+                        with col1:
+                            작업시간 = st.text_input("작업시간", key=f"접촉_작업시간_{i}_{selected_작업명}")
+                    
+                    elif 부담작업_선택 == "진동":
+                        col1, col2, col3 = st.columns(3)
+                        with col1:
+                            수공구명 = st.text_input("수공구명", key=f"진동_수공구명_{i}_{selected_작업명}")
+                        with col2:
+                            수공구무게 = st.text_input("수공구무게(kg)", key=f"진동_수공구무게_{i}_{selected_작업명}")
+                        with col3:
+                            수공구작업시간 = st.text_input("수공구작업시간", key=f"진동_작업시간_{i}_{selected_작업명}")
+                    
+                    elif 부담작업_선택 == "밀기-당기기":
+                        col1, col2, col3 = st.columns(3)
+                        with col1:
+                            대차무게 = st.text_input("대차 무게(kg)", key=f"대차_무게_{i}_{selected_작업명}")
+                        with col2:
+                            대차위_제품무게 = st.text_input("대차위 제품무게(kg)", key=f"대차위_제품무게_{i}_{selected_작업명}")
+                        with col3:
+                            밀고당기기_빈도 = st.text_input("밀고-당기기 빈도(회/일)", key=f"밀고당기기_빈도_{i}_{selected_작업명}")
+                
+                st.markdown("---")
 
 # 5. 정밀조사 탭
 with tabs[4]:
