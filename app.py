@@ -491,7 +491,7 @@ with tabs[3]:
                 
                 st.markdown("---")
             
-            # 작업별로 관련된 유해요인에 대한 원인분석
+# 작업별로 관련된 유해요인에 대한 원인분석
             st.markdown("---")
             st.subheader(f"작업별로 관련된 유해요인에 대한 원인분석 - [{selected_작업명}]")
             
