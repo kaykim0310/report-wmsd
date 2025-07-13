@@ -327,10 +327,10 @@ with tabs[0]:
     업종 = st.text_input("업종", key="업종")
     col1, col2 = st.columns(2)
     with col1:
-        예비조사 = st.text_input("예비조사일 (YYYY-MM-DD)", key="예비조사", placeholder="2024-01-01")  # ← 변경됨
+        예비조사 = st.date_input("예비조사일", key="예비조사")
         수행기관 = st.text_input("수행기관", key="수행기관")
     with col2:
-        본조사 = st.text_input("본조사일 (YYYY-MM-DD)", key="본조사", placeholder="2024-01-01")  # ← 변경됨
+        본조사 = st.date_input("본조사일", key="본조사")
         성명 = st.text_input("성명", key="성명")
 
 # 2. 근골격계 부담작업 체크리스트 탭
